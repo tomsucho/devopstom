@@ -1,0 +1,62 @@
+{% extends "ip_localizator/base.html" %}
+
+{% block body_block %}
+
+<div class="row">
+  <div class="col-lg-12">
+  <div class="jumbotron text-center">
+    <h2> Welcome to DevOpsTom dot Com! </h2>
+    <h3> Your IP address is:
+      <span class="badge badge-primary">
+        {{ ip_geo_data.ip }} <br>       
+      </span>
+    </h3>
+  </div>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <ul class="location-box">
+          <h4 class="text-left">Your Location Information: </h4>
+          {% for k2,v2 in ip_geo_data.items() %}
+            {% if k2 == 'location' %}
+              {% for k3,v3 in v2.items() %}
+                {{k3}}: {{v3}} <br>
+              {% endfor %}
+            {% else %}
+            {{k2}}: {{v2}} <br>
+            {% endif %}
+          {% endfor %}
+        </ul>
+
+    </div>
+    <div class="col-lg-6">
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCu6h-W7hOLN1cIkTp0mXh9N4DOxE9i2V8"></script>
+        <script type="text/javascript">
+          function initialize() {
+            var mapOptions = {
+              center: new google.maps.LatLng({{ ip_geo_data.latitude }},
+                {{ ip_geo_data.longitude }}),
+              zoom: 10,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("map-canvas"),
+              mapOptions);
+
+            var myLatlng = new google.maps.LatLng({{ ip_geo_data.latitude}},
+              {{ ip_geo_data.longitude}});
+
+            var marker = new google.maps.Marker({
+              position: myLatlng,
+              map: map,
+              title: "'. $xmladd .'"
+            });
+          }
+          google.maps.event.addDomListener(window, "load", initialize);
+        </script>
+        <div id="map-canvas"></div>
+      </div>
+    </div>
+
+{% endblock %}

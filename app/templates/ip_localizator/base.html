@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>DevOpsTom.Com</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+<style media="screen">
+
+  #map-canvas {
+    height: 550px;
+    width: 555px;
+  }
+
+  .location-box {
+    width: 580px;
+    height: 550px;
+    padding-top: 20px;
+    padding-left: 15%;
+    text-align: left;
+    background-color: peachpuff;
+    margin-bottom: 5px;
+  }
+  .navbar {
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background: peachpuff;
+  }
+
+  .navbar-brand {
+    color: black;
+    text-decoration: underline;
+
+  }
+  .navbar-link {
+     color: black;
+     text-align: left;
+   }
+
+  .jumbotron {
+    background: peachpuff;
+    padding-top: 1%;
+    margin-bottom: 5px;
+
+  }
+</style>
+
+<body>
+  <div class="container">
+    <nav class="navbar">
+      <ul class="nav navbar-nav">
+        <li><a class="navbar-brand" href="{{ url_for('home') }}">DevOpsTom.Com</a></li>
+        <li role="separator" class="divider"></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="navbar-link" href="{{ url_for('ip_stats') }}">Visitors IP Stats</a></li>
+      </ul>
+    </nav>
+
+      {% block body_block %}
+      {% endblock %}
+
+  </div>
+</body>
+
+</html>
