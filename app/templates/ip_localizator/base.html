@@ -2,9 +2,10 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>DevOpsTom.Com</title>
+    <title>DevOpsTom.Com.pl</title>
+    <meta name="description" content="Modern DevOps test site deployed on GKE(GCP) managed Kubernetes engine from Google.">
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Latest compiled JavaScript -->
@@ -14,23 +15,28 @@
 <style media="screen">
 
   #map-canvas {
-    height: 550px;
-    width: 555px;
+    height: 625px;
+    width: 100%;
+    margin-top: 2px;
+    padding-top: 10px;
+    margin-left: 2px;
+    text-align: left;
   }
 
   .location-box {
-    width: 580px;
-    height: 550px;
-    padding-top: 20px;
-    padding-left: 15%;
+    /* width: 450px;
+    height: 450px; */
+    width: 100%;
+    height: 100%;
+    padding-top: 5px;
+    margin-top: 2px;
+    margin-right: 2px;
     text-align: left;
     background-color: peachpuff;
-    margin-bottom: 5px;
   }
   .navbar {
     padding-left: 14px;
     padding-right: 14px;
-    margin-top: 5px;
     margin-bottom: 5px;
     background: peachpuff;
   }
@@ -57,11 +63,14 @@
   <div class="container">
     <nav class="navbar">
       <ul class="nav navbar-nav">
-        <li><a class="navbar-brand" href="{{ url_for('home') }}">DevOpsTom.Com</a></li>
+        <li><a class="navbar-brand" href="{{ url_for('home') }}">DevOpsTom.Com.pl</a></li>
         <li role="separator" class="divider"></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a class="navbar-link" href="{{ url_for('ip_stats') }}">Visitors IP Stats</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="navbar-link" href="{{ url_for('about') }}">About</a></li>
       </ul>
     </nav>
 

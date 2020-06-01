@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "web-site"
+  namespace: "app"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+  selector:
+    app: "web-site"
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "web-site"
+  namespace: "app"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "web-site"
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: "web-site"
+    spec:
+      nodeSelector:
+        dedicated: "backend-pool"
+      tolerations:
+      - key: "dedicated"
+        operator: "Exists"
+      containers:
+        - name: "web-site"
+          imagePullPolicy: Always
+          image: eu.gcr.io/big-blend-273414/devopstom/app:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-uri
+                  key: uri
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "web-site"
+  namespace: "app"
+  annotations:
+    kubernetes.io/ingress.class: "app-ingress"
+    #nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+    #nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  # tls:
+  # - hosts:
+  #   - www.devopstom.com.pl
+  #   secretName: devopstom.tls
+  rules:
+  - host: devopstom.com.pl
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: "web-site"
+          servicePort: 8080
