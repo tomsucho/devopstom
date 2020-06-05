@@ -10,32 +10,38 @@ from pprint import pprint
 app = Flask(__name__)
 app.config['MONGO_URI'] = str(os.getenv('MONGO_URI'))
 mongo = PyMongo(app)
+geo_api_key = str(os.getenv('GEO_API_KEY'))
+
 
 @app.route("/")
 def home():
+    ip_data = dict(request={
+        "request_time": datetime.now(),
+        "request_user_agent": str(request.headers.getlist("User-Agent")[0])
+    })
     if IP(request.headers.getlist("X-Real-IP")[0]).iptype() == 'PUBLIC':
         client_ip_addr = request.headers.getlist("X-Real-IP")[0]
-        ip_geo_data = helpers.get_ip_location(client_ip_addr)
-        ip_data = dict(request=
-            {
-                "request_time": datetime.now(),
-                "request_user_agent": str(request.headers.getlist("User-Agent")[0])
-            }
-        )
+        ip_geo_data = helpers.get_ip_location(client_ip_addr, geo_api_key)
         ip_data['ip_geo_data'] = ip_geo_data
         # pprint(ip_data)
-        mongo.db.ips.insert_one(ip_data)
+        mongo.db.ips.insert_one({
+            **ip_data["request"],
+            **ip_data["ip_geo_data"]
+        })
     else:
-        ip_geo_data = {"ip": "local"}
-    return render_template('ip_localizator/index.html', ip_data={k:v for k,v in ip_data.items() if not k.startswith("_")} )
+        ip_data['ip_geo_data'] = {"ip": "local"}
+    return render_template('ip_localizator/index.html', ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")})
+
 
 @app.route("/ip_stats")
 def ip_stats():
     return render_template('ip_localizator/ip_stats.html')
 
+
 @app.route("/about")
 def about():
     return render_template('ip_localizator/about.html')
+
 
 if __name__ == '__main__':
     app.run()

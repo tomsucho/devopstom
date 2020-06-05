@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-loading
+  namespace: monitoring
+data:
+  dashboards.yml: |-
+    apiVersion: 1
+
+    providers:
+     - name: 'Base Dashboards'
+       folder: 'Base'
+       folderUid: ''
+       type: file
+       allowUiUpdates: true
+       updateIntervalSeconds: 60
+       options:
+         path: /var/lib/grafana/dashboards
+

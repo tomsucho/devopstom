@@ -1,13 +1,13 @@
 import requests
 
-def get_ip_location(ip_address):
-    send_url = "http://api.ipstack.com/{}?access_key=0f331e2789a9d4ebea901bb2b75690a2"
+def get_ip_location(ip_address, geo_api_key):
+    send_url = "http://api.ipstack.com/{}?access_key={}"
     try:
-        req = requests.get(send_url.format(ip_address), timeout=5)
+        req = requests.get(send_url.format(ip_address, geo_api_key), timeout=2)
     except Exception as e:
         raise Http404("Geocoder resolve issue!")
 
-    if req.ok:
+    if req.ok and "ip" in req.json():
         ip_geo_spec = req.json()
         lat = ip_geo_spec['latitude']
         long = ip_geo_spec['longitude']

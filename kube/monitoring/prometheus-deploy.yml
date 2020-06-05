@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: prometheus-dp
+  namespace: monitoring
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  serviceName: prometheus-svc
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccount: monitoring
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.4.3
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--web.enable-lifecycle"
+            - "--storage.tsdb.no-lockfile"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/prometheus/
+            - name: prom-persistent-data
+              mountPath: /prometheus
+          ports:
+          - containerPort: 9090
+      securityContext:
+        fsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 1000
+      volumes:
+        - name: config-volume
+          configMap:
+            name: prometheus-configmap
+  volumeClaimTemplates:
+    - metadata:
+        name: prom-persistent-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: 5Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus-svc
+  namespace: monitoring
+spec:
+  selector:
+    app: prometheus
+  type: ClusterIP
+  ports:
+  - name: promui
+    protocol: TCP
+    port: 9090
+    targetPort: 9090

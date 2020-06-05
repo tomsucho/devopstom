@@ -52,12 +52,20 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
+          resources:
+            requests:
+              cpu: 400m
           env:
             - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
                   name: mongodb-uri
                   key: uri
+            - name: GEO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: geo-api-key
+                  key: key
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

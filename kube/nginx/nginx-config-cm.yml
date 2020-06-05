@@ -59,6 +59,9 @@ data:
 
                 proxy_pass http://app-ingress;
             }
+            location /favicon.ico {
+              alias /usr/share/nginx/html/favicon.ico;
+            }
         }
     }
 
