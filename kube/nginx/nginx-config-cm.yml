@@ -64,4 +64,24 @@ data:
             }
         }
     }
+    stream {
+        upstream app-ingress-ssl {
+            server app-ingress.ingress:443 max_fails=3 fail_timeout=10s;
+        }
+
+        log_format basic '$remote_addr [$time_local] '
+                    '$protocol $status $bytes_sent $bytes_received '
+                    '$session_time "$upstream_addr" '
+                    '"$upstream_bytes_sent" "$upstream_bytes_received" "$upstream_connect_time"';
+
+        access_log /var/log/nginx/tcp_ssl_access.log basic;
+        error_log  /var/log/nginx/tcp_ssl_error.log;
+
+        server {
+            listen 443;
+            # proxy_bind $remote_addr:$remote_port transparent;
+            proxy_pass app-ingress-ssl;
+            proxy_next_upstream on;
+        }
+    }
 

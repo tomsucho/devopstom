@@ -3,6 +3,8 @@ import os
 
 from flask import Flask, render_template, request
 from flask_pymongo import PyMongo
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from prometheus_client import make_wsgi_app
 from IPy import IP
 from datetime import datetime
 from pprint import pprint

@@ -41,7 +41,7 @@ spec:
         app: "web-site"
     spec:
       nodeSelector:
-        dedicated: "backend-pool"
+        dedicated: "web-pool"
       tolerations:
       - key: "dedicated"
         operator: "Exists"
@@ -54,7 +54,7 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 400m
+              cpu: 50m
           env:
             - name: MONGO_URI
               valueFrom:
@@ -73,15 +73,18 @@ metadata:
   name: "web-site"
   namespace: "app"
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/issue-temporary-certificate: "false"
     kubernetes.io/ingress.class: "app-ingress"
     #nginx.ingress.kubernetes.io/secure-backends: "true"
     nginx.ingress.kubernetes.io/enable-access-log: "true"
     #nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
-  # tls:
-  # - hosts:
-  #   - www.devopstom.com.pl
-  #   secretName: devopstom.tls
+  tls:
+  - hosts:
+    - devopstom.com.pl
+    secretName: devopstom-tls
   rules:
   - host: devopstom.com.pl
     http:

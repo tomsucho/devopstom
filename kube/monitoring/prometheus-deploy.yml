@@ -17,6 +17,8 @@ spec:
       labels:
         app: prometheus
     spec:
+      nodeSelector:
+        dedicated: "backend-pool"
       serviceAccount: monitoring
       containers:
         - name: prometheus

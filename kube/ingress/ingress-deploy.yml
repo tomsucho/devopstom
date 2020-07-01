@@ -97,7 +97,10 @@ metadata:
   name: app-ingress
   namespace: ingress
 spec:
-  type: ClusterIP
+  # type: ClusterIP
+  type: LoadBalancer
+  loadBalancerIP: 35.242.213.10
+  externalTrafficPolicy: Local
   ports:
   - port: 80
     targetPort: 80
