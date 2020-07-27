@@ -23,7 +23,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: "web-site"
-  namespace: "app"
+  namespace: "app" 
 spec:
   replicas: 1
   selector:
@@ -39,6 +39,10 @@ spec:
     metadata:
       labels:
         app: "web-site"
+      annotations:
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"         
     spec:
       nodeSelector:
         dedicated: "web-pool"
