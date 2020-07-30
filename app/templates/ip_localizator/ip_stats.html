@@ -6,16 +6,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <div class="chart" id="bar_countries">
         <script>
-            var countries_graphs = {{ countries_plot_data | safe }};
-            var countries_layout = {{ countries_plot_layout | safe }};
-            Plotly.plot('bar_countries',countries_graphs,countries_layout);
-        </script>
-    </div>
-    <div class="chart" id="bar_cities">
-        <script>
-            var cities_graphs = {{ cities_plot_data | safe }};
-            var cities_layout = {{ cities_plot_layout | safe }};
-            Plotly.plot('bar_cities',cities_graphs,cities_layout);
+            var graph = {{ data | safe }};
+            var layout = {{ layout | safe }};
+            Plotly.plot('bar_countries',graph,layout);
         </script>
     </div>
 </div>

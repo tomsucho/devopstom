@@ -21,24 +21,12 @@ def get_ip_location(ip_address, geo_api_key):
         ip_geo_spec = dict(ERROR='API Request to Geocoder has failed!')
     return ip_geo_spec
 
-def visitors_by_city(mongo):        
+def visitors_stats(mongo):        
     df = pd.DataFrame(list(mongo.db.ips.find()))
-    df.groupby(['city']).size().reset_index(name="count")
-    data = df.groupby(['city']).size().sort_values(ascending=False).reset_index(name="count")
+    grouped = df.groupby(['country_name','city']).size().sort_values(ascending=False).reset_index(name="count").groupby('city')
 
-    layout = dict(title='Visitors Count by City',
+    layout = dict(title='Visitors Count by Country&City',
                   #plot_bgcolor="peachpuff",
-                  paper_bgcolor="peachpuff") 
-    plot_data = [go.Bar(x=data['city'],y=data['count'])]
-    return json.dumps(plot_data, cls=plotly.utils.PlotlyJSONEncoder), layout
-
-def visitors_by_country(mongo):        
-    df = pd.DataFrame(list(mongo.db.ips.find()))
-    df.groupby(['country_name']).size().reset_index(name="count")
-    data = df.groupby(['country_name']).size().sort_values(ascending=False).reset_index(name="count")
-
-    layout = dict(title='Visitors Count by Country',
-                  #plot_bgcolor="peachpuff",
-                  paper_bgcolor="peachpuff") 
-    plot_data = [go.Bar(x=data['country_name'],y=data['count'])]
+                  paper_bgcolor="peachpuff", barmode='stack') 
+    plot_data = [go.Bar(dict(x=values['country_name'],y=values['count'], name=key)) for key,values in grouped]
     return json.dumps(plot_data, cls=plotly.utils.PlotlyJSONEncoder), layout

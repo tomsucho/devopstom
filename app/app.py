@@ -46,14 +46,10 @@ def home():
 
 @app.route("/ip_stats")
 def ip_stats():
-    cities_data, cities_layout = helpers.visitors_by_city(mongo)
-    countries_data, countries_layout = helpers.visitors_by_country(mongo)
+    data, layout = helpers.visitors_stats(mongo)    
     return render_template('ip_localizator/ip_stats.html', 
-                           cities_plot_data=cities_data,
-                           cities_plot_layout=cities_layout,
-                           countries_plot_data=countries_data,
-                           countries_plot_layout=countries_layout,
-                           )
+                           data=data,
+                           layout=layout)
 
 @app.route("/about")
 def about():
