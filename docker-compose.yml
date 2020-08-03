@@ -3,18 +3,17 @@ services:
   mongodb:
     image: mongo:4.0.4
     container_name: mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: data_admin
-      MONGO_INITDB_ROOT_PASSWORD: secretx
     volumes:
       - ${HOME}/opstom-flask/mongodb-storage/data:/data/db
       - ${HOME}/opstom-flask/mongodb-storage/config:/data/configdb
     ports:
         - 27017:27017
     command: mongod
+    env_file:
+      - .mongo_env
 
   app:
-    image: eu.gcr.io/big-blend-273414/devopstom/app:latest
+    image: registry.digitalocean.com/devopstom/devopstom-app:latest
     container_name: app
     ports:
         - 8080
