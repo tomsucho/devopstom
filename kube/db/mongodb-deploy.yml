@@ -4,7 +4,7 @@ kind: Namespace
 metadata:
   name: db
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongodb
@@ -22,11 +22,11 @@ spec:
       labels:
         app: mongodb
     spec:
-      nodeSelector:
-        dedicated: "backend-pool"
-      tolerations:
-      - key: "dedicated"
-        operator: "Exists"
+      # nodeSelector:
+      #   dedicated: "backend-pool"
+      # tolerations:
+      # - key: "dedicated"
+      #   operator: "Exists"
       terminationGracePeriodSeconds: 10
       containers:
         - name: mongo
@@ -52,7 +52,7 @@ spec:
       name: mongo-persistent-storage
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: fast
+      storageClassName: do-block-storage
       resources:
         requests:
           storage: 5Gi

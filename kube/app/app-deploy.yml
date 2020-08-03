@@ -19,7 +19,7 @@ spec:
     app: "web-site"
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "web-site"
@@ -44,15 +44,15 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"         
     spec:
-      nodeSelector:
-        dedicated: "web-pool"
-      tolerations:
-      - key: "dedicated"
-        operator: "Exists"
+      # nodeSelector:
+      #   dedicated: "web-pool"
+      # tolerations:
+      # - key: "dedicated"
+      #   operator: "Exists"
       containers:
         - name: "web-site"
           imagePullPolicy: Always
-          image: eu.gcr.io/big-blend-273414/devopstom/app:latest
+          image: registry.digitalocean.com/devopstom/devopstom-app:latest
           ports:
             - containerPort: 8080
               protocol: TCP

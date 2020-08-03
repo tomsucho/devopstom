@@ -21,8 +21,8 @@ spec:
         prometheus.io/port: "8080"
         prometheus.io/path: "/metrics"
     spec:
-      nodeSelector:
-        dedicated: "backend-pool"
+      # nodeSelector:
+      #   dedicated: "backend-pool"
       containers:
       - image: quay.io/coreos/kube-state-metrics:v1.9.5
         livenessProbe:

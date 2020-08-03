@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-ingress
@@ -18,11 +18,11 @@ spec:
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: nginx-ingress
-      nodeSelector:
-        dedicated: web-pool
-      tolerations:
-      - key: "dedicated"
-        operator: "Exists"
+      # nodeSelector:
+      #   dedicated: web-pool
+      # tolerations:
+      # - key: "dedicated"
+      #   operator: "Exists"
       containers:
       - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.20.0
         imagePullPolicy: IfNotPresent
@@ -90,16 +90,19 @@ data:
   worker-processes: "8"
   proxy-body-size: "0"
   disable-access-log: "false"
+  use-proxy-protocol: "true"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: app-ingress
   namespace: ingress
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
 spec:
   # type: ClusterIP
   type: LoadBalancer
-  loadBalancerIP: 35.242.213.10
+  loadBalancerIP: 178.128.136.16
   externalTrafficPolicy: Local
   ports:
   - port: 80
