@@ -9,6 +9,7 @@ RUN apt-get update \
 RUN gem install geoip-c \
    && gem install fluent-plugin-geoip \
    && gem install fluent-plugin-route \
+   && gem install fluent-plugin-rewrite-tag-filter \
    && gem sources --clear-all \
    && apt-get purge -y --auto-remove \
                   -o APT::AutoRemove::RecommendsImportant=false \

@@ -192,9 +192,9 @@
           }
         }
       },
-      "latitude" : { "type" : "half_float" },
+      "latitude" : { "type" : "float" },
       "location" : { "type" : "geo_point" },
-      "longitude" : { "type" : "half_float" },
+      "longitude" : { "type" : "float" },
       "proxy_add_x_forwarded_for" : {
         "type" : "text",
         "fields" : {
