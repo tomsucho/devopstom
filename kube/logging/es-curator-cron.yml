@@ -1,0 +1,39 @@
+---
+apiVersion: batch/v1beta1 #for API server versions >= 1.8.0 use batch/v1beta1
+kind: CronJob
+metadata:
+  name: elasticsearch-curator
+  namespace: logging
+  labels:
+    k8s-app: es-curator
+    namespace: logging
+spec:
+  schedule: "06 12 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 298
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - image: bitnami/elasticsearch-curator:latest
+            name: es-curator
+            imagePullPolicy: IfNotPresent
+            resources:
+              limits:
+                cpu: 500m
+                memory: 500Mi
+              requests:
+                cpu: 100m
+                memory: 100Mi
+            args: ["--config", "/etc/config/config.yml", "/etc/config/action_file.yml"]
+            volumeMounts:
+            - name: config
+              mountPath: /etc/config
+          volumes:
+          - name: config
+            configMap:
+              name: curator-config
