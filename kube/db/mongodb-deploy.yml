@@ -52,7 +52,7 @@ spec:
       name: mongo-persistent-storage
     spec:
       accessModes: ["ReadWriteOnce"]
-      storageClassName: do-block-storage
+      storageClassName: local-storage
       resources:
         requests:
-          storage: 5Gi
+          storage: 1.9Gi

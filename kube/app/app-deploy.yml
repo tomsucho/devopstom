@@ -52,7 +52,7 @@ spec:
       containers:
         - name: "web-site"
           imagePullPolicy: Always
-          image: registry.digitalocean.com/devopstom/devopstom-app:latest
+          image: localhost:5000/devopstom/app:latest
           ports:
             - containerPort: 8080
               protocol: TCP

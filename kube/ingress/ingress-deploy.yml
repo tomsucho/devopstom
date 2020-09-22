@@ -90,7 +90,7 @@ data:
   worker-processes: "8"
   proxy-body-size: "0"
   disable-access-log: "false"
-  use-proxy-protocol: "true"
+  # use-proxy-protocol: "true"
   log-format-escape-json: "true"
   log-format-upstream: '{"time_local": "$time_local", "proxy_protocol_addr": "$proxy_protocol_addr","remote_addr": "$remote_addr", "proxy_add_x_forwarded_for": "$proxy_add_x_forwarded_for",
                         "remote_user": "$remote_user", "request" : "$request", "host": "$host", "status": "$status", "body_bytes_sent": "$body_bytes_sent",
@@ -107,18 +107,21 @@ metadata:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
 spec:
   # type: ClusterIP
-  type: LoadBalancer
-  loadBalancerIP: 178.128.136.16
+  # type: LoadBalancer
+  # loadBalancerIP: 178.128.136.16
+  type: NodePort
   externalTrafficPolicy: Local
   ports:
-  - port: 80
-    targetPort: 80
-    protocol: TCP
-    name: http
   - port: 443
     targetPort: 443
+    nodePort: 30443
     protocol: TCP
     name: https
+  - port: 80
+    targetPort: 80
+    nodePort: 30080
+    protocol: TCP
+    name: http
   selector:
     app: app-ingress
 
