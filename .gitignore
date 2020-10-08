@@ -4,3 +4,4 @@ mongodb-storage/**
 .**
 *.dump
 nohup**
+misc/
