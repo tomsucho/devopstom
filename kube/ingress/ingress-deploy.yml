@@ -4,7 +4,7 @@ metadata:
   name: app-ingress
   namespace: ingress
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: app-ingress
@@ -23,6 +23,16 @@ spec:
       # tolerations:
       # - key: "dedicated"
       #   operator: "Exists"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - app-ingress
+            topologyKey: "kubernetes.io/hostname"      
       containers:
       - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.20.0
         imagePullPolicy: IfNotPresent
