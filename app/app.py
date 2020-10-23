@@ -14,6 +14,7 @@ app = Flask(__name__)
 app.config['MONGO_URI'] = str(os.getenv('MONGO_URI'))
 mongo = PyMongo(app)
 geo_api_key = str(os.getenv('GEO_API_KEY'))
+maps_api_key = str(os.getenv('MAPS_API_KEY'))
 log = logging.getLogger()
 # Add prometheus wsgi middleware to route /metrics requests
 metrics = PrometheusMetrics(app, group_by='endpoint')
@@ -41,7 +42,7 @@ def home():
     except Exception as e:       
         print_exc()
         ip_data['ip_geo_data'] = {"ip": "local"}
-    return render_template('ip_localizator/index.html', ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")})
+    return render_template('ip_localizator/index.html', ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")}, maps_api_key=maps_api_key)
 
 
 @app.route("/ip_stats")
