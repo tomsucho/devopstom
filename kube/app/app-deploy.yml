@@ -48,11 +48,12 @@ spec:
       #   dedicated: "web-pool"
       # tolerations:
       # - key: "dedicated"
-      #   operator: "Exists"
+      #   operator: "Exists"      
       containers:
         - name: "web-site"
-          imagePullPolicy: Always
-          image: localhost:5000/devopstom/app:latest
+          imagePullPolicy: IfNotPresent
+          #image: localhost:5000/devopstom/app:latest
+          image: registry.gitlab.com/dev-ops-tom/devopstom:v0.1.5
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -74,7 +75,9 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: maps-api-key
-                  key: key                  
+                  key: key
+      imagePullSecrets:
+        - name: gitlab-dev-ops-tom                  
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -94,6 +97,9 @@ spec:
   - hosts:
     - devopstom.com.pl
     secretName: devopstom-tls
+  - hosts:
+    - "*.devopstom.com.pl"
+    secretName: wildcard-devopstom-tls
   rules:
   - host: devopstom.com.pl
     http:
