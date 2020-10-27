@@ -19,6 +19,8 @@ deploy-to-stage:
   environment:
       name: test     
   script:
+    - env
+    - kubectl delete secret --ignore-not-found gitlab-dev-ops-tom
     - kubectl create secret docker-registry gitlab-dev-ops-tom
       --docker-server=$CI_REGISTRY
       --docker-username=$GIT_LAB_REG_USER
