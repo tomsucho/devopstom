@@ -20,8 +20,8 @@ log = logging.getLogger()
 metrics = PrometheusMetrics(app, group_by='endpoint')
 
 @app.route("/")
-@metrics.counter('requests_count_by_ip', 'Request counts by client IP',
-                   labels={'CustomerIP': lambda: request.headers.getlist("X-Real-IP")[0]})
+# @metrics.counter('requests_count_by_ip', 'Request counts by client IP',
+#                    labels={'CustomerIP': lambda: request.headers.getlist("X-Real-IP")[0]})
 def home():
     ip_data = dict(request={
         "request_time": datetime.now(),
@@ -40,10 +40,9 @@ def home():
         else:
             ip_data['ip_geo_data'] = {"ip": "local"}
     except Exception as e:       
-        print_exc()
+        print(f"ERROR: exception has occured: {e}")
         ip_data['ip_geo_data'] = {"ip": "local"}
     return render_template('ip_localizator/index.html', ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")}, maps_api_key=maps_api_key)
-
 
 @app.route("/ip_stats")
 def ip_stats():
