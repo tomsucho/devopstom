@@ -7,7 +7,7 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  name: "web-site"
+  name: "${CI_COMMIT_REF_SLUG}-web-site"
   namespace: ${CI_COMMIT_REF_SLUG}
 spec:
   type: ClusterIP
@@ -16,19 +16,19 @@ spec:
       port: 8080
       protocol: TCP
   selector:
-    app: "web-site"
+    app: "${CI_COMMIT_REF_SLUG}-web-site"
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "web-site"
+  name: "${CI_COMMIT_REF_SLUG}-web-site"
   namespace: ${CI_COMMIT_REF_SLUG} 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: "web-site"
+      app: "${CI_COMMIT_REF_SLUG}-web-site"
   minReadySeconds: 5
   strategy:
     type: RollingUpdate
@@ -38,7 +38,7 @@ spec:
   template:
     metadata:
       labels:
-        app: "web-site"
+        app: "${CI_COMMIT_REF_SLUG}-web-site"
       annotations:
         prometheus.io/port: "8080"
         prometheus.io/scrape: "true"
@@ -50,10 +50,10 @@ spec:
       # - key: "dedicated"
       #   operator: "Exists"      
       containers:
-        - name: "web-site"
-          imagePullPolicy: IfNotPresent
+        - name: "${CI_COMMIT_REF_SLUG}-web-site"
+          #imagePullPolicy: IfNotPresent
           #image: localhost:5000/devopstom/app:latest
-          image: ${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHORT_SHA}
+          image: "${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_SLUG}:${VERSION}"
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -64,8 +64,8 @@ spec:
             - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
-                  name: mongodb-uri
-                  key: uri
+                  name: mongo-uri
+                  key: key
             - name: GEO_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -82,7 +82,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: "web-site"
+  name: "${CI_COMMIT_REF_SLUG}-web-site"
   namespace: ${CI_COMMIT_REF_SLUG}
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -103,5 +103,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: "web-site"
+          serviceName: "${CI_COMMIT_REF_SLUG}-web-site"
           servicePort: 8080
