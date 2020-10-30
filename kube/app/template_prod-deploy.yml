@@ -1,0 +1,107 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "web-site"
+  namespace: app
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+  selector:
+    app: "web-site"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "web-site"
+  namespace: app 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "web-site"
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: "web-site"
+      annotations:
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"         
+    spec:
+      # nodeSelector:
+      #   dedicated: "web-pool"
+      # tolerations:
+      # - key: "dedicated"
+      #   operator: "Exists"      
+      containers:
+        - name: "web-site"
+          #imagePullPolicy: IfNotPresent
+          #image: localhost:5000/devopstom/app:latest
+          image: "${CI_REGISTRY_IMAGE}/web-site:${VERSION}"
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 50m
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-uri
+                  key: key
+            - name: GEO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: geo-api-key
+                  key: key
+            - name: MAPS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: maps-api-key
+                  key: key
+      imagePullSecrets:
+        - name: gitlab-dev-ops-tom                  
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "web-site"
+  namespace: app
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/issue-temporary-certificate: "false"
+    kubernetes.io/ingress.class: "app-ingress"
+    #nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/enable-access-log: "true"
+    #nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - devopstom.com.pl
+    secretName: devopstom-tls
+  rules:
+  - host: devopstom.com.pl
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: "web-site"
+          servicePort: 8080
