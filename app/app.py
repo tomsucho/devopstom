@@ -1,6 +1,5 @@
 import helpers.helpers as helpers
-import os
-import logging
+import os, logging
 from traceback import print_exc
 
 from flask import Flask, render_template, request
@@ -10,12 +9,19 @@ from IPy import IP
 from datetime import datetime
 from pprint import pprint
 
+version_numbers = [str(os.getenv('CI_COMMIT_REF_SLUG')),
+                   str(os.getenv('CI_COMMIT_SHA_SHORT')),
+                   str(os.getenv('CI_COMMIT_TAG'))]
+app_version = ":".join(version_numbers)
+
 app = Flask(__name__)
 app.config['MONGO_URI'] = str(os.getenv('MONGO_URI'))
 mongo = PyMongo(app)
+
 geo_api_key = str(os.getenv('GEO_API_KEY'))
 maps_api_key = str(os.getenv('MAPS_API_KEY'))
 log = logging.getLogger()
+
 # Add prometheus wsgi middleware to route /metrics requests
 metrics = PrometheusMetrics(app, group_by='endpoint')
 
@@ -32,28 +38,31 @@ def home():
             client_ip_addr = request.headers.getlist("X-Real-IP")[0]
             ip_geo_data = helpers.get_ip_location(client_ip_addr, geo_api_key)
             ip_data['ip_geo_data'] = ip_geo_data
-            # pprint(ip_data)
             mongo.db.ips.insert_one({
                 **ip_data["request"],
                 **ip_data["ip_geo_data"]
             })
         else:
             ip_data['ip_geo_data'] = {"ip": "local"}
-    except Exception as e:       
-        print(f"ERROR: exception has occured: {e}")
+    except Exception as e:
+        log.error(f"Exception has occured: {e}")
         ip_data['ip_geo_data'] = {"ip": "local"}
-    return render_template('ip_localizator/index.html', ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")}, maps_api_key=maps_api_key)
+    return render_template('ip_localizator/index.html',
+                           ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")},
+                           maps_api_key=maps_api_key)
 
 @app.route("/ip_stats")
 def ip_stats():
-    data, layout = helpers.visitors_stats(mongo)    
-    return render_template('ip_localizator/ip_stats.html', 
+    data, layout = helpers.visitors_stats(mongo)
+    return render_template('ip_localizator/ip_stats.html',
                            data=data,
                            layout=layout)
 
 @app.route("/about")
 def about():
-    return render_template('ip_localizator/about.html')
+    return render_template('ip_localizator/about.html',
+                           nodename=os.uname().nodename,
+                           app_version=app_version)
 
 
 if __name__ == '__main__':

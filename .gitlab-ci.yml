@@ -1,11 +1,10 @@
 ---
-workflow:
-  rules:
-    - if: $CI_COMMIT_TAG != null
+stages:
+  - build
+  - deploy-to-test
+  - deploy-to-prod
 
-build-container-image:
-  # Official docker image.
-  # dummy change
+build-image-tag:
   stage: build
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -14,25 +13,79 @@ build-container-image:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - env
-    - /kaniko/executor --context $CI_PROJECT_DIR/app --dockerfile Dockerfile --destination $CI_REGISTRY_IMAGE/${CI_COMMIT_REF_SLUG}:$CI_COMMIT_TAG
+    - /kaniko/executor --context $CI_PROJECT_DIR/app
+      --dockerfile Dockerfile
+      --cache
+      --build-arg CI_COMMIT_REF_SLUG=${CI_COMMIT_REF_SLUG}
+      --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG}
+      --build-arg CI_COMMIT_SHORT=${CI_COMMIT_SHORT_SHA}
+      --destination $CI_REGISTRY_IMAGE/${CI_COMMIT_REF_SLUG}:$CI_COMMIT_TAG
+  rules:
+    - changes:
+        - .gitlab-ci.yml
+        - .gitignore
+        - kube/**/*
+        - nginx/**/*
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_TAG != null
 
-deploy-to-stage-namespace:
-  stage: deploy
-  image:  bitnami/kubectl:1.19
-  environment:
-      name: test     
+build-image-branch:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - env
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR/app
+      --dockerfile Dockerfile
+      --cache
+      --build-arg CI_COMMIT_REF_SLUG=${CI_COMMIT_REF_SLUG}
+      --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG}
+      --build-arg CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA}
+      --destination ${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHORT_SHA}
+    - echo "FROM ${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHORT_SHA}" | /kaniko/executor --dockerfile /dev/stdin --destination ${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_SLUG}:latest
+  rules:
+    - changes:
+        - .gitlab-ci.yml
+        - .gitignore
+        - kube/**/*
+        - nginx/**/*
+      when: never
+    - if: $CI_COMMIT_REF_SLUG != "master" &&  $CI_COMMIT_TAG == null
+
+.deployment:
+  image:  registry.gitlab.com/dev-ops-tom/devopstom/img-kubectl:1.19
   script:
     - env
-    - kubectl delete secret --ignore-not-found gitlab-dev-ops-tom
+    - if [[ ${CI_ENVIRONMENT_NAME} == "prod" ]]; then export NAMESPACE="app"; else export NAMESPACE="${CI_COMMIT_REF_SLUG}"; fi
+    - if [[ ${CI_ENVIRONMENT_NAME} == "prod" ]]; then export VERSION=${CI_COMMIT_TAG}; else export VERSION="latest"; fi
+    - echo "NAMESPACE=${NAMESPACE} VERSION=${VERSION}"
+    - for secret in $(env | grep "K8S_SECRET_" | cut -d"=" -f 1);
+        do
+          kubectl create secret generic $(echo ${secret#K8S_SECRET_}|tr '_' '-' | tr [:upper:] [:lower:])
+            --from-literal=key=$(eval echo $`echo ${secret}`) -n ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f - ;
+        done
+    - cat $CI_PROJECT_DIR/kube/app/template_app-deploy.yml | envsubst | tee >(kubectl apply -f -)
     - kubectl create secret docker-registry gitlab-dev-ops-tom
       --docker-server=$CI_REGISTRY
       --docker-username=$GIT_LAB_REG_USER
-      --docker-password=$GIT_LAB_REG_PASS
-    - cat $CI_PROJECT_DIR/kube/app/template_app-deploy.yml | envsubst | kubectl apply -f -
+      --docker-password=$GIT_LAB_REG_PASS --dry-run=client -n ${NAMESPACE} -o yaml | kubectl apply -f -
 
+deploy-to-test:
+  extends: .deployment
+  stage: deploy-to-test
+  environment:
+    name: test
+  rules:
+    - if: $CI_COMMIT_REF_SLUG != "master" &&  $CI_COMMIT_REF_SLUG != "proxmox-home" && $CI_COMMIT_TAG == null
 
-
-
-
-
-
+deploy-to-prod:
+  extends: .deployment
+  stage: deploy-to-prod
+  environment:
+      name: prod
+  rules:
+    - if: $CI_COMMIT_REF_SLUG == "proxmox-home" &&  $CI_COMMIT_TAG != null
