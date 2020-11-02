@@ -10,7 +10,7 @@ from datetime import datetime
 from pprint import pprint
 
 version_numbers = [str(os.getenv('CI_COMMIT_REF_SLUG')),
-                   str(os.getenv('CI_COMMIT_SHA_SHORT')),
+                   str(os.getenv('CI_COMMIT_SHORT_SHA')),
                    str(os.getenv('CI_COMMIT_TAG'))]
 app_version = ":".join(version_numbers)
 
