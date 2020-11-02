@@ -47,7 +47,7 @@ build-image-branch:
         - kube/**/*
         - nginx/**/*
       when: never
-    - if: $CI_COMMIT_REF_SLUG != "master" && $CI_COMMIT_REF_SLUG != "proxmox-home" && $CI_COMMIT_TAG == null
+    - if: $CI_COMMIT_REF_SLUG != "master" && $CI_COMMIT_REF_SLUG != "proxmox-home" && $CI_COMMIT_TAG == null && $CI_MERGE_REQUEST_IID
 
 .deployment:
   image:  registry.gitlab.com/dev-ops-tom/devopstom/img-kubectl:1.19
@@ -62,16 +62,17 @@ build-image-branch:
       fi
     - if [[ ${CI_ENVIRONMENT_NAME} == "prod" ]]; then export VERSION=${CI_COMMIT_TAG}; else export VERSION="latest"; fi
     - echo "NAMESPACE=${NAMESPACE} VERSION=${VERSION}"
+    - kubectl create secret docker-registry gitlab-dev-ops-tom
+      --docker-server=$CI_REGISTRY
+      --docker-username=$GIT_LAB_REG_USER
+      --docker-password=$GIT_LAB_REG_PASS --dry-run=client -n ${NAMESPACE} -o yaml | kubectl apply -f -    
     - for secret in $(env | grep "K8S_SECRET_" | cut -d"=" -f 1);
         do
           kubectl create secret generic $(echo ${secret#K8S_SECRET_}|tr '_' '-' | tr [:upper:] [:lower:])
             --from-literal=key=$(eval echo $`echo ${secret}`) -n ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f - ;
         done
     - cat $CI_PROJECT_DIR/kube/app/${TEMPLATE} | envsubst | tee >(kubectl apply -f -)
-    - kubectl create secret docker-registry gitlab-dev-ops-tom
-      --docker-server=$CI_REGISTRY
-      --docker-username=$GIT_LAB_REG_USER
-      --docker-password=$GIT_LAB_REG_PASS --dry-run=client -n ${NAMESPACE} -o yaml | kubectl apply -f -
+    - kubectl -n $NAMESPACE rollout restart deploy $(kubectl -n $NAMESPACE get deploy -o custom-columns=NAME:.metadata.name --no-headers)
 
 deploy-to-test:
   extends: .deployment
@@ -79,7 +80,7 @@ deploy-to-test:
   environment:
     name: test
   rules:
-    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_MERGE_REQUEST_IID && $CI_COMMIT_REF_SLUG != "master" && $CI_COMMIT_REF_SLUG != "proxmox-home" && $CI_COMMIT_TAG == null
 
 deploy-to-prod:
   extends: .deployment
