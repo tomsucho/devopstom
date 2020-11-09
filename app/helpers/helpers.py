@@ -22,15 +22,14 @@ def visitors_stats(mongo):
     layout = {}
     try:
         db_collection = list(mongo.db.ips.find())
+        if db_collection:
+            df = pd.DataFrame(db_collection)
+            grouped = df.groupby(['country_name','city']).size().sort_values(ascending=False).reset_index(name="count").groupby('city')
+            plot_data = [go.Bar(dict(x=values['country_name'],y=values['count'], name=key)) for key,values in grouped]
+            layout = dict(title='Visitors Count by Country&City',
+                    #plot_bgcolor="peachpuff",
+                    paper_bgcolor="peachpuff", barmode='stack')
     except Exception as e:
         logging.error(f"Fetching data from MongoDB has failed! MSG: {e}")
-
-    if db_collection:
-        df = pd.DataFrame(db_collection)
-        grouped = df.groupby(['country_name','city']).size().sort_values(ascending=False).reset_index(name="count").groupby('city')
-        plot_data = [go.Bar(dict(x=values['country_name'],y=values['count'], name=key)) for key,values in grouped]
-        layout = dict(title='Visitors Count by Country&City',
-                  #plot_bgcolor="peachpuff",
-                  paper_bgcolor="peachpuff", barmode='stack')
 
     return json.dumps(plot_data, cls=plotly.utils.PlotlyJSONEncoder), layout
