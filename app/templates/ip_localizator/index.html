@@ -3,7 +3,7 @@
 {% block body_block %}
 
 <div class="row">
-  <div class="col-lg-12">
+  <div class="col-md">
   <div class="jumbotron text-center">
     <h2> Welcome! </h2>
     <h3> Your Public IP address is:
@@ -17,7 +17,7 @@
 
 <div class="row no-gutters">
     <div class="col-lg-6">
-        <ul class="location-box">
+        <ul class="location-box rounded">
           <h4 class="text-left" style="font-family: 'Goldman', cursive;">Request IP/Geo Data: </h4>
             {% for k1,v1 in ip_data.items() %}
               {% if k1 == 'request' %}
