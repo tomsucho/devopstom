@@ -10,8 +10,7 @@ from datetime import datetime
 from pprint import pprint
 
 version_numbers = [str(os.getenv('CI_COMMIT_REF_SLUG')),
-                   str(os.getenv('CI_COMMIT_SHORT_SHA')),
-                   str(os.getenv('CI_COMMIT_TAG'))]
+                   str(os.getenv('CI_COMMIT_SHORT_SHA'))]
 app_version = ":".join(version_numbers)
 
 app = Flask(__name__)
