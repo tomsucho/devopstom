@@ -50,7 +50,7 @@
     </div>
     <div class="col-lg-6">
         {% if ip_data.ip_geo_data.ip != 'local' %}
-          <div id="map-canvas" text-align: center>
+          <div id="map-canvas">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}"></script>
             <script type="text/javascript">
               function initialize() {
