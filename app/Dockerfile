@@ -5,13 +5,14 @@ LABEL app="devopstom-flask-website"
 RUN apt-get -y update && apt-get -y install build-essential \
     python3-dev
 
-COPY requirments.txt /home/app/
+ADD requirments.txt /home/app/
 RUN pip install -r /home/app/requirments.txt
 
-COPY app.py /home/app/
-COPY helpers /home/app/helpers/
-COPY templates /home/app/templates/
-COPY uwsgi/uwsgi.ini /home/app/
+ADD app.py /home/app/
+ADD helpers /home/app/helpers/
+ADD templates /home/app/templates/
+ADD static /home/app/static
+ADD uwsgi/uwsgi.ini /home/app/
 WORKDIR /home/app
 RUN chown -R www-data:www-data .
 

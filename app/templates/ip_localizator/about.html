@@ -4,9 +4,8 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <div class="jumbotron text-left">
-        <h3> This is a test web-site build for fun and to learn by doing. </h3>
-            <h5>
+        <div class="jumbotron-about-text text-left">
+        <h5> This is a test web-site build for fun and to learn by doing. </h3>
             <ul>
                 <li> it runs on k8s</li>
                 <li> it uses Nginx and Ingres to proxy traffic to the web app</li>
@@ -14,15 +13,12 @@
                 <li> it uses MongoDB as a backend data store</li>
                 <li> it is build & deployed by GitLab.com CICD via k8s integrations</li>
             </ul>
-            </h5>
-        <h3>Website Info: </h3>
-            <h5>
+        <h5>Website Info: </h5>
             <ul>
                 <li>  Version [branch:sha:tag]: <mark>{{ app_version }}</mark> </li>
                 <br>
                 <li>  POD: <mark>{{ nodename }}</mark> </li>
             </ul>
-            </h5>
         </div>
     </div>
 </div>
