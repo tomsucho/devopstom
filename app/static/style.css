@@ -1,23 +1,26 @@
 #map-canvas {
-    height: 100%;
+    height: 110vh;
     width: 100%;
     padding-top: 5px;
     text-align: left;
+    margin-left: 1px;
 }
 
 .location-box {
     width: 100%;
     height: 100%;
     padding-top: 5px;
+    margin-right: 1px;
     text-align: left;
     background-color: peachpuff;
     font-size: small;
 }
-.nav {
+.navbar {
     padding: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
     background: peachpuff;
+    font-size: larger;
 }
 .navbar-brand {
     color: black;
@@ -31,7 +34,7 @@
     text-align: left;
     font-family: 'Goldman', cursive;
     text-decoration: underline;
-    font-size: larger;
+    font-size: large;
 }
 
 .jumbotron {

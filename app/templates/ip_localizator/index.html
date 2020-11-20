@@ -16,7 +16,7 @@
 </div>
 
 <div class="row no-gutters">
-    <div class="col-md-6">
+    <div class="col-lg-6">
         <ul class="location-box">
           <h4 class="text-left" style="font-family: 'Goldman', cursive;">Request IP/Geo Data: </h4>
             {% for k1,v1 in ip_data.items() %}
@@ -48,7 +48,7 @@
         </ul>
 
     </div>
-    <div class="col-md-6">
+    <div class="col-lg-6">
         {% if ip_data.ip_geo_data.ip != 'local' %}
           <div id="map-canvas" text-align: center>
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}"></script>
