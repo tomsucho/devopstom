@@ -4,8 +4,9 @@ services:
     image: mongo:4.0.4
     container_name: mongodb
     volumes:
-      - ${HOME}/opstom-flask/mongodb-storage/data:/data/db
-      - ${HOME}/opstom-flask/mongodb-storage/config:/data/configdb
+      - ${PWD}/mongo-volume/mongo-data:/data/db
+      - ${PWD}/mongo-volume/mongo-config:/data/configdb
+      - ${PWD}/mongo-volume/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
         - 27017:27017
     command: mongod
@@ -13,7 +14,7 @@ services:
       - .mongo_env
 
   app:
-    image: eu.gcr.io/big-blend-273414/devopstom/app:latest
+    image: devopstom/web-site:latest
     container_name: app
     ports:
         - 8080

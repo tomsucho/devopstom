@@ -1,7 +1,9 @@
 **/__pycache__/**
 .vscode/**
-mongodb-storage/**
+terraform
+**/.terraform
 .**
 *.dump
 nohup**
 misc/
+mongo-volume/

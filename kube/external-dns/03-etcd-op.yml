@@ -73,7 +73,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: my-etcd-op-etcd-operator-etcd-operator
-  namespace: metallb-system
+  namespace: app
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -247,31 +247,3 @@ spec:
 ---
 # Source: etcd-operator/templates/crds.yaml
 # Synced with https://github.com/coreos/etcd-operator/blob/master/pkg/util/k8sutil/crd.go
----
-# Source: etcd-operator/templates/etcd-cluster-crd.yaml
-apiVersion: "etcd.database.coreos.com/v1beta2"
-kind: "EtcdCluster"
-metadata:
-  name: etcd-cluster
-  labels:
-    chart: "etcd-operator-0.11.2"
-    app: etcd-operator
-    heritage: Helm
-    release: my-etcd-op
-spec:
-  size: 3
-  version: "3.2.25"
-  repository: "quay.io/coreos/etcd"
-  pod:
-    antiAffinity: false
-    busyboxImage: busybox:1.28.0-glibc
-    nodeSelector: {}
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
-    securityContext: {}
-    tolerations: []
