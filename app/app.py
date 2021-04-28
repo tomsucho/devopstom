@@ -1,5 +1,6 @@
 import helpers.helpers as helpers
 import os, logging
+import random, string
 from traceback import print_exc
 
 from flask import Flask, render_template, request
@@ -17,7 +18,7 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = str(os.getenv("MONGO_URI"))
 mongo = PyMongo(app)
 
-app.config["SECRET_KEY"] = str(os.getenv("APP_PROTECTION_KEY"))
+app.config["SECRET_KEY"] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
 csrf = CSRFProtect(app)
 
 geo_api_key = str(os.getenv("GEO_API_KEY"))
