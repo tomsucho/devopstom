@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: my-coredns-coredns
+  name: my-coredns
   labels:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-coredns"
@@ -17,7 +17,7 @@ data:
             lameduck 5s
         }
         ready
-        kubernetes cluster.local in-addr.arpa ip6.arpa {
+        kubernetes k8s.home in-addr.arpa ip6.arpa {
             pods insecure
             fallthrough in-addr.arpa ip6.arpa
             ttl 30
@@ -31,7 +31,7 @@ data:
         etcd internal.k8s {
             stubzones
             path /skydns
-            endpoint http://etcd-cluster-client.app.svc:2379
+            endpoint http://etcd-cluster-client.external-dns.svc:2379
         }
     }
 ---
@@ -39,7 +39,7 @@ data:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: my-coredns-coredns
+  name: my-coredns
   labels:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-coredns"
@@ -61,7 +61,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: my-coredns-coredns
+  name: my-coredns
   labels:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-coredns"
@@ -70,17 +70,17 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: my-coredns-coredns
+  name: my-coredns
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: app
+  namespace: external-dns
 ---
 # Source: coredns/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-coredns-coredns
+  name: my-coredns
   labels:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-coredns"
@@ -100,7 +100,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-coredns-coredns
+  name: my-coredns
   labels:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-coredns"
@@ -167,7 +167,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: my-coredns-coredns
+            name: my-coredns
             items:
             - key: Corefile
               path: Corefile

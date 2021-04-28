@@ -73,7 +73,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: my-etcd-op-etcd-operator-etcd-operator
-  namespace: app
+  namespace: external-dns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
