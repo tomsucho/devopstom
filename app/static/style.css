@@ -3,17 +3,20 @@
     width: 100%;
     padding-top: 5px;
     text-align: left;
-    margin-left: 2px;
+    margin-left: 1px;
+    border-radius: 10px;
 }
 
 .location-box {
     width: 100%;
     height: 100%;
     padding-top: 5px;
-    margin-right: 2px;
+    margin-right: 1px;
     text-align: left;
     background-color: peachpuff;
     font-size: small;
+    border-radius: 10px;
+    border: 1px solid black;
 }
 .navbar {
     padding: 5px;
@@ -22,6 +25,8 @@
     background: peachpuff;
     font-family: 'Goldman', cursive;
     font-size: larger;
+    border-radius: 10px;
+    border: 1px solid black;
 }
 .nav-item {
     color: black;
@@ -37,10 +42,67 @@
     margin-bottom: 5px;
     font-family: 'Goldman', cursive;
     font-size: medium;
+    border-radius: 10px;
+    border: 1px solid black;
 }
 
 .jumbotron-about-text {
     background: peachpuff;
     padding: 1%;
-    font-size: small
+    font-size: small;
+    border-radius: 10px;
+    border: 1px solid black;
 }
+.jumbotron-about-text h5 {
+    font-family: 'Goldman', cursive;
+}
+
+#backdrop {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 10;
+    pointer-events: none;
+    display: none;
+}
+
+#backdrop.visible {
+    display: block;
+    pointer-events: all;
+}
+
+#modal-login-card {
+    position: fixed;
+    z-index: 100;
+    width: 26rem;
+    left: calc(66% - 26rem);
+    top: 30vh;
+    display: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+    margin-bottom: 1rem;
+}
+
+#modal-login-card.visible {
+    display: block;
+    animation: fade-slide-in 0.5s ease-out forwards;
+}
+
+@media (max-width: 800px) {
+    #modal-login-card {
+      width: 26rem;
+      left: calc(66% - 20rem);
+    }
+  }
+
+@keyframes fade-slide-in {
+    from {
+      transform: translateY(-3rem);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }

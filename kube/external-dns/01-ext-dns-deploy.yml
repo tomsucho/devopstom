@@ -25,19 +25,19 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: external-dns
-  namespace: kube-system
+  namespace: external-dns
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: external-dns
-  namespace: kube-system
+  namespace: external-dns
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: external-dns
-  namespace: kube-system
+  namespace: external-dns
 spec:
   strategy:
     type: Recreate
@@ -59,5 +59,5 @@ spec:
         - --log-level=debug # debug only
         env:
         - name: ETCD_URLS
-          value: http://etcd-cluster-client.app:2379
+          value: http://etcd-cluster-client.external-dns:2379
 
