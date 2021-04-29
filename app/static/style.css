@@ -5,6 +5,7 @@
     text-align: left;
     margin-left: 1px;
     border-radius: 10px;
+    border: 1px solid black;
 }
 
 .location-box {
@@ -77,8 +78,8 @@
 #modal-login-card {
     position: fixed;
     z-index: 100;
-    width: 26rem;
-    left: calc(66% - 26rem);
+    width: 25rem;
+    left: calc(50% - 12.5rem);
     top: 30vh;
     display: none;
     border-radius: 10px;
@@ -91,10 +92,10 @@
     animation: fade-slide-in 0.5s ease-out forwards;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 400px) {
     #modal-login-card {
-      width: 26rem;
-      left: calc(66% - 20rem);
+      width: 18.2rem;
+      left: calc(50% - 9.1rem);
     }
   }
 
