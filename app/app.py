@@ -7,8 +7,6 @@ from flask import Flask, render_template, request
 from flask_wtf.csrf import CSRFProtect
 from flask_pymongo import PyMongo
 from prometheus_flask_exporter import PrometheusMetrics
-from IPy import IP
-from datetime import datetime
 from pprint import pprint
 
 version_numbers = [str(os.getenv("CI_COMMIT_REF_SLUG")), str(os.getenv("CI_COMMIT_SHORT_SHA"))]
@@ -18,7 +16,7 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = str(os.getenv("MONGO_URI"))
 mongo = PyMongo(app)
 
-app.config["SECRET_KEY"] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
+app.config["SECRET_KEY"] = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 csrf = CSRFProtect(app)
 
 geo_api_key = str(os.getenv("GEO_API_KEY"))
@@ -30,42 +28,39 @@ metrics = PrometheusMetrics(app, group_by="endpoint")
 
 
 @app.route("/")
-# @metrics.counter('requests_count_by_ip', 'Request counts by client IP',
-#                    labels={'CustomerIP': lambda: request.headers.getlist("X-Real-IP")[0]})
-def home():
-    ip_data = dict(
-        request={"request_time": datetime.now(), "request_user_agent": str(request.headers.getlist("User-Agent")[0])}
-    )
-    try:
-        if IP(request.headers.getlist("X-Real-IP")[0]).iptype() == "PUBLIC":
-            client_ip_addr = request.headers.getlist("X-Real-IP")[0]
-            ip_geo_data = helpers.get_ip_location(client_ip_addr, geo_api_key)
-            ip_data["ip_geo_data"] = ip_geo_data
-            mongo.db.ips.insert_one({**ip_data["request"], **ip_data["ip_geo_data"]})
-        else:
-            ip_data["ip_geo_data"] = {"ip": "local"}
-    except Exception as e:
-        log.error(f"Exception has occured: {e}")
-        ip_data["ip_geo_data"] = {"ip": "local"}
+def index():
+    ip_data = helpers.get_ip_data(request, mongo, geo_api_key)
     return render_template(
         "ip_localizator/index.html",
-        ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")},
+        # ip_data={k: v for k, v in ip_data.items() if not k.startswith("_")},
+        ip_data={k: v for k, v in ip_data.items()},
         maps_api_key=maps_api_key,
     )
 
 
 @app.route("/ip_stats")
 def ip_stats():
-    data, layout = helpers.visitors_stats(mongo)
-    return render_template("ip_localizator/ip_stats.html", data=data, layout=layout)
+    cities_data, cities_layout, browser_data, browser_layout = helpers.visitors_stats(mongo)
+    return render_template(
+        "ip_localizator/ip_stats.html",
+        cities_data=cities_data,
+        cities_layout=cities_layout,
+        browser_data=browser_data,
+        browser_layout=browser_layout,
+    )
+
 
 @app.route("/about")
 def about():
     return render_template("ip_localizator/about.html", nodename=os.uname().nodename, app_version=app_version)
 
-@app.route("/login", methods = ['POST'])
+
+@app.route("/login", methods=["POST"])
 def login():
     return render_template("ip_localizator/logged-in.html")
 
+
 if __name__ == "__main__":
+    app.jinja_env.auto_reload = True
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
     app.run()

@@ -6,9 +6,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <div class="chart" id="bar_countries">
         <script>
-            var graph = {{ data | safe }};
-            var layout = {{ layout | safe }};
+            var graph = {{ cities_data | safe }};
+            var layout = {{ cities_layout | safe }};
             Plotly.plot('bar_countries',graph,layout);
+        </script>
+    </div>
+</div>
+<div class="jumbotron text-center">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <div class="chart" id="pie_browsers">
+        <script>
+            var graph = {{ browser_data | safe }};
+            var layout = {{ browser_layout | safe }};
+            Plotly.plot('pie_browsers',graph,layout);
         </script>
     </div>
 </div>
