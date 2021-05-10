@@ -20,8 +20,10 @@ build-image-tag:
       --build-arg CI_COMMIT_TAG=${CI_COMMIT_TAG}
       --build-arg CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA}
       --destination $CI_REGISTRY_IMAGE/web-site:$CI_COMMIT_TAG
-  rules:
-    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_BRANCH == "proxmox-home"
+  only:
+    - tags
+  except:
+    - /^(?!proxmox).+@/
 
 build-image-branch:
   stage: build
@@ -87,5 +89,7 @@ deploy-to-prod:
   stage: deploy-to-prod
   environment:
       name: prod
-  rules:
-    - if: $CI_COMMIT_TAG != null && $CI_COMMIT_BRANCH == "proxmox-home"
+  only:
+    - tags
+  except:
+    - /^(?!proxmox).+@/
