@@ -69,7 +69,7 @@ def visitors_stats(mongo):
                 .size()
                 .sort_values(ascending=False)
                 .reset_index(name="count")
-                .head(5).country_name
+                .head(30).country_name
             )
 
             filter_top = grouped_cities.head()['country_name'].isin(top_countries)
