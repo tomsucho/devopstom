@@ -52,19 +52,24 @@ def visitors_stats(mongo):
     cities_layout, browser_layout = {}, {}
     try:
         df = pd.DataFrame(mongo.db.ips.find({}, {"_id": 0, "request_user_agent": 1, "country_name": 1, "city": 1}))
+    except Exception as e:
+        logging.error(f"Fetching data from MongoDB has failed! MSG: {e}", e)
+    else:
         if not df.empty:
             grouped_cities = (
                 df.groupby(["country_name", "city"])
                 .size()
                 .sort_values(ascending=False)
+                .head(30)
                 .reset_index(name="count")
                 .groupby("city")
             )
+
             cities_data = [
                 go.Bar(dict(x=values["country_name"], y=values["count"], name=key)) for key, values in grouped_cities
             ]
             cities_layout = dict(
-                title="Visitors by Country & City",
+                title="Visitors by Country & City (Top30)",
                 plot_bgcolor="peachpuff",
                 paper_bgcolor="peachpuff",
                 barmode="stack",
@@ -80,8 +85,6 @@ def visitors_stats(mongo):
                 )
             ]
             browser_layout = dict(title="Visitors by Browser Type", paper_bgcolor="peachpuff")
-    except Exception as e:
-        logging.error(f"Fetching data from MongoDB has failed! MSG: {e}", e)
 
     return (
         json.dumps(cities_data, cls=plotly.utils.PlotlyJSONEncoder),
