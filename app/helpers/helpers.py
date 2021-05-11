@@ -60,10 +60,20 @@ def visitors_stats(mongo):
                 df.groupby(["country_name", "city"])
                 .size()
                 .sort_values(ascending=False)
-                .head(30)
                 .reset_index(name="count")
                 .groupby("city")
             )
+
+            top_countries = list(
+                df.groupby(["country_name"])
+                .size()
+                .sort_values(ascending=False)
+                .reset_index(name="count")
+                .head(5).country_name
+            )
+
+            filter_top = grouped_cities.head()['country_name'].isin(top_countries)
+            grouped_cities = grouped_cities.head()[filter_top].groupby('city')
 
             cities_data = [
                 go.Bar(dict(x=values["country_name"], y=values["count"], name=key)) for key, values in grouped_cities
