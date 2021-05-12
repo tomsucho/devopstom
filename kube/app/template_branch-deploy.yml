@@ -23,7 +23,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "${CI_COMMIT_REF_SLUG}-web-site"
-  namespace: ${CI_COMMIT_REF_SLUG} 
+  namespace: ${CI_COMMIT_REF_SLUG}
 spec:
   replicas: 1
   selector:
@@ -42,13 +42,13 @@ spec:
       annotations:
         prometheus.io/port: "8080"
         prometheus.io/scrape: "true"
-        prometheus.io/path: "/metrics"         
+        prometheus.io/path: "/metrics"
     spec:
       # nodeSelector:
       #   dedicated: "web-pool"
       # tolerations:
       # - key: "dedicated"
-      #   operator: "Exists"      
+      #   operator: "Exists"
       containers:
         - name: "${CI_COMMIT_REF_SLUG}-web-site"
           #imagePullPolicy: IfNotPresent
@@ -76,8 +76,13 @@ spec:
                 secretKeyRef:
                   name: maps-api-key
                   key: key
+            - name: APP_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret-key
+                  key: key
       imagePullSecrets:
-        - name: gitlab-dev-ops-tom                  
+        - name: gitlab-dev-ops-tom
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -91,6 +96,8 @@ metadata:
     kubernetes.io/ingress.class: "app-ingress"
     #nginx.ingress.kubernetes.io/secure-backends: "true"
     nginx.ingress.kubernetes.io/enable-access-log: "true"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
     #nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:

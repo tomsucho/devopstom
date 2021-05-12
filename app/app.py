@@ -16,7 +16,8 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = str(os.getenv("MONGO_URI"))
 mongo = PyMongo(app)
 
-app.config["SECRET_KEY"] = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+#app.config["SECRET_KEY"] = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+app.config["SECRET_KEY"] = str(os.getenv("APP_SECRET_KEY"))
 csrf = CSRFProtect(app)
 
 geo_api_key = str(os.getenv("GEO_API_KEY"))
