@@ -38,13 +38,16 @@
         </div>
       <form>
       <nav class="navbar navbar-expand-md rounded">
-        <div class="navbar">
-          <a href="{{ url_for('index') }}" class="btn btn-outline-dark btn-lg" role="button" aria-disabled="true">DevOpsTom.Com.pl</a>
-        </div>
-        <div class="navbar-nav ml-auto">
-          <a href="{{ url_for('ip_stats') }}" class="btn btn-outline-dark btn-lg mr-1" role="button" aria-disabled="true">Visitors IP Stats</a>
-          <a href="{{ url_for('about') }}" class="btn btn-outline-dark btn-lg mr-1" role="button" aria-disabled="true">About</a>
-          <a id="nav-login-btn" href="#" class="btn btn-outline-dark btn-lg mr-1" role="button">Login</a>
+        <a href="{{ url_for('index') }}" class="navbar-brand btn btn-outline-dark btn-lg mr-1">DevOpsTom.Com.pl</a>
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav" role="button">
+              <span class="btn btn-outline-dark">Menu</span>
+            </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <div class="navbar-nav ml-auto">
+            <a href="{{ url_for('ip_stats') }}" class="btn btn-outline-dark btn-lg mr-1" role="button" aria-disabled="true">Visitors IP Stats</a>
+            <a href="{{ url_for('about') }}" class="btn btn-outline-dark btn-lg mr-1" role="button" aria-disabled="true">About</a>
+            <a id="nav-login-btn" href="#" class="btn btn-outline-dark btn-lg mr-1" role="button">Login</a>
+          </div>
         </div>
       </nav>
         {% block body_block %}
