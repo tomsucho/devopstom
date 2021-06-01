@@ -1,8 +1,8 @@
 **/__pycache__/**
-.vscode/**
 terraform
 **/.terraform
 .**
+!.vscode
 *.dump
 nohup**
 misc/
