@@ -8,7 +8,7 @@
     <h2> Welcome! </h2>
     <h3> Your Public IP address is:
       <span class="badge badge-primary">
-        {{ ip_data.ip_geo_data.IP }} <br>
+        {{ ip_data.ip_geo_data.ip }} <br>
       </span>
     </h3>
   </div>
@@ -48,7 +48,7 @@
         </ul>
     </div>
     <div class="col-lg-6">
-        {% if (ip_data.ip_geo_data.IP != 'local') %}
+        {% if (ip_data.ip_geo_data.ip != 'local') %}
           <div id="map-canvas">
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}"></script>
             <script type="text/javascript">

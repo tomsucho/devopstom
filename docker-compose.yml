@@ -4,9 +4,9 @@ services:
     image: mongo:4.0.4
     container_name: mongodb
     volumes:
-      - ${PWD}/mongo-volume/mongo-data:/data/db
-      - ${PWD}/mongo-volume/mongo-config:/data/configdb
-      - ${PWD}/mongo-volume/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ${HOME}/mongo-volume/mongo-data:/data/db
+      - ${HOME}/mongo-volume/mongo-config:/data/configdb
+      - ${HOME}/mongo-volume/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
         - 27017:27017
     command: mongod
