@@ -41,9 +41,9 @@ def get_ip_data(request: Type[Request], mongo: PyMongo, geo_api_key: string):
             mongo.db.ips.insert_one({**ip_data["request"], **ip_data["ip_geo_data"]})
         except Exception as e:
             log.error(f"Exception has occured: {e}")
-            ip_data["ip_geo_data"] = {"IP": "local"}
+            ip_data["ip_geo_data"] = {"ip": "local"}
     else:
-        ip_data["ip_geo_data"] = {"IP": "local"}
+        ip_data["ip_geo_data"] = {"ip": "local"}
     return ip_data
 
 
